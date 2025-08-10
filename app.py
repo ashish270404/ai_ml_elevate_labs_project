@@ -5,10 +5,10 @@ from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from datetime import date, timedelta
 import plotly.graph_objects as go
-import os  # Added import
+import os  
 
 TICKER, LOOKBACK = "AAPL", 60
-MODEL_PATH = "lstm_stock_prediction_model.keras"  # Use relative path, not Windows path
+MODEL_PATH = "lstm_stock_prediction_model.keras"  
 
 @st.cache_resource
 def load_model():
@@ -33,31 +33,31 @@ def forecast(series, model, scaler):
 
 st.title(f"{TICKER} – LSTM Price Forecaster")
 
-# Show current directory contents for debugging
+
 st.write("Files in current directory:", os.listdir("."))
 
-# Load model and data
 model = load_model()
 prices = fetch_data()
 prices = prices.squeeze()
 
-# Fit scaler
+
 scaler = MinMaxScaler().fit(prices.values.reshape(-1, 1))
 
-# Predict next close price
+
 next_close = forecast(prices, model, scaler)
 last_close = prices.iloc[-1]
 
-# Show metrics
+
 st.metric("Last Close", f"${last_close:.2f}")
 st.metric("Next-Day Forecast", f"${next_close:.2f}", delta=f"${next_close - last_close:+.2f}")
 
-# Price chart
+
 st.line_chart(prices.tail(250))
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=prices.index, y=prices, name="Adj Close"))
 fig.update_layout(height=400, margin=dict(t=30, b=20))
 st.plotly_chart(fig, use_container_width=True)
+
 
 
